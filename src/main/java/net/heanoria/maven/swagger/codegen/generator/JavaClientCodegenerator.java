@@ -10,7 +10,6 @@ public class JavaClientCodegenerator extends JavaClientCodegen implements Codege
         return "java2";
     }
 
-
     public void setInvokerPackage(String invokerPackage) {
         this.invokerPackage = invokerPackage;
     }

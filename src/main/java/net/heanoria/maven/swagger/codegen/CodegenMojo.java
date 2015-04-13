@@ -21,7 +21,6 @@ import static java.util.ServiceLoader.load;
 @Mojo(name = "generate")
 public class CodegenMojo extends AbstractMojo {
 
-
     private static final String TEMPLATE_DIR_PARAM = "templateDir";
 
     @Parameter(property = "generate.lang", defaultValue = "java2")
