@@ -1,0 +1,74 @@
+package {{package}};
+
+import {{invokerPackage}}.ApiInvoker;
+
+{{#imports}}import {{import}};
+{{/imports}}
+
+import org.springframework.stereotype.Component;
+import java.util.*;
+import com.jordan.exception.JordanTechnicalException;
+
+import rx.Observable;
+
+@Component
+{{#operations}}
+public class {{classname}} {
+
+	private static String contentType = "application/json";
+	
+	// String basePath = "{{basePath}}";  Possible de redéfinir ça plus proprement?
+	String basePath = "http://jordan";
+	
+	ApiInvoker apiInvoker = ApiInvoker.getInstance();
+
+	public ApiInvoker getInvoker() {
+		return apiInvoker;
+	}
+	
+	public void setBasePath(String basePath) {
+		this.basePath = basePath;
+	}
+	
+	public String getBasePath() {
+		return basePath;
+	}
+
+	{{#operation}}
+	{{#errorList}} //error info- code: {{code}} reason: "{{reason}}" model: {{#responseModel}}{{responseModel}}
+	{{/responseModel}}{{^responseModel}}<none>
+	{{/responseModel}}
+	{{/errorList}}	
+	public {{#returnType}}Observable<{{{returnType}}}> {{/returnType}}{{^returnType}}void {{/returnType}} {{nickname}} ({{#allParams}}{{{dataType}}} {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) {
+		Object postBody = {{#bodyParam}}{{bodyParam}}{{/bodyParam}}{{^bodyParam}}null{{/bodyParam}};
+		{{#requiredParamCount}}
+		// verify required params are set
+		if({{/requiredParamCount}}{{#requiredParams}} {{paramName}} == null {{#hasMore}}|| {{/hasMore}}{{/requiredParams}}{{#requiredParamCount}}) {
+			 throw new JordanTechnicalException("missing required params");
+		}
+		{{/requiredParamCount}}
+
+		// create path and map variables
+		String path = "{{path}}"{{#pathParams}}.replaceAll("\\{" + "{{paramName}}" + "\\}", apiInvoker.escapeString({{{paramName}}}.toString())){{/pathParams}};
+
+		// query params
+		Map<String, String> queryParams = new HashMap<String, String>();
+		Map<String, String> headerParams = new HashMap<String, String>();
+		Map<String, String> formParams = new HashMap<String, String>();
+
+		{{#queryParams}}if(!"null".equals(String.valueOf({{paramName}})))
+			queryParams.put("{{baseName}}", String.valueOf({{paramName}}));
+		{{/queryParams}}
+
+		{{#headerParams}}headerParams.put("{{baseName}}", {{paramName}});
+		{{/headerParams}}
+
+		{{#formParams}}{{#notFile}}formParams.put("{{baseName}}", {{paramName}});{{/notFile}}
+		{{/formParams}}
+		
+		return apiInvoker.invokeAPI(basePath, path, "{{httpMethod}}", queryParams, postBody, headerParams, formParams, contentType, {{returnBaseType}}.class);
+		
+	}
+	{{/operation}}
+}
+{{/operations}}

@@ -1,0 +1,169 @@
+package {{invokerPackage}};
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.function.Consumer;
+import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.jordan.exception.JordanTechnicalException;
+import com.jordan.async.ErrorHandler;
+import com.jordan.ApplicationContextHolder;
+
+import com.jordan.conf.Config;
+import com.jordan.async.RequestContext;
+import rx.Observable;
+import rx.Observable.OnSubscribe;
+
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.Request;
+import com.ning.http.client.RequestBuilder;
+import com.ning.http.client.Response;
+import com.ning.http.client.AsyncCompletionHandler;
+
+
+public class ApiInvoker {
+	private static ApiInvoker INSTANCE = new ApiInvoker();
+	private AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
+	private Map<String, String> defaultHeaderMap = new HashMap<String, String>();
+	private boolean isDebug = false;
+	
+	private static Logger LOGGER = LoggerFactory.getLogger(ApiInvoker.class);
+
+	public void enableDebug() {
+		isDebug = true;
+	}
+
+	public static ApiInvoker getInstance() {
+		return INSTANCE;
+	}
+
+	public void addDefaultHeader(String key, String value) {
+		 defaultHeaderMap.put(key, value);
+	}
+
+	public String escapeString(String str) {
+		try{
+			return URLEncoder.encode(str, "utf8").replaceAll("\\+", "%20");
+		}
+		catch(UnsupportedEncodingException e) {
+			return str;
+		}
+	}
+
+	public static <T> T deserialize(String json, String containerType, Class<T> clazz) {
+		try{
+			return JsonUtil.getJsonMapper().readValue(json, clazz);
+		} catch (Exception e) {
+			throw new JordanTechnicalException("Erreur de désérialisation JSON lors de l'appel d'un WS asynchrone", e);
+		}
+		
+	}
+
+	public static String serialize(Object obj) {
+		try {
+			if (obj != null) {
+				return JsonUtil.getJsonMapper().writeValueAsString(obj);
+			}
+			else {
+				return null;
+			}
+		} catch (Exception e) {
+			throw new JordanTechnicalException("Erreur de sérialisation JSON lors de l'appel d'un WS asynchrone", e);
+		}
+	}
+
+	public <T> Observable<T> invokeAPI(String host, String path, String method, Map<String, String> queryParams, Object body, Map<String, String> headerParams, Map<String, String> formParams, String contentType, Class<T> clazz) {
+	
+		// En mode test, on ne fait pas d'appels externes
+		Config conf = ApplicationContextHolder.getContext().getBean(Config.class);
+		if (conf.isTestMode()) {
+			LOGGER.info("Appel vers " + host + path + getQueryString(queryParams) + " désactivé en mode test");
+			return Observable.just(null);
+		}
+		
+		RequestBuilder builder = new RequestBuilder();
+		builder.setMethod(method);
+		builder.setUrl(host + path + getQueryString(queryParams));
+		if (body != null) {
+			builder.setBody(serialize(body));
+		}
+
+		for (String key : headerParams.keySet()) {
+			builder.setHeader(key, headerParams.get(key));
+		}
+
+		for (String key : defaultHeaderMap.keySet()) {
+			if (!headerParams.containsKey(key)) {
+				builder.setHeader(key, defaultHeaderMap.get(key));
+			}
+		}
+		builder.addHeader("Content-Type", contentType);
+		RequestContext context = RequestContext.get();
+		builder.addHeader("Token", context.getToken());
+		if (context.getApiKey() != null) {
+			builder.addHeader("ApiKey", context.getApiKey());
+		}
+		builder.addHeader("IdRequest", context.getIdRequest());
+		builder.addHeader("Internal", "1");
+
+		Request request = builder.build();
+		Consumer<Throwable> errorHandler = ErrorHandler.getErrorHandler();
+		return Observable.create((OnSubscribe<T>) suscriber -> {
+			try {
+				asyncHttpClient.executeRequest(request, new AsyncCompletionHandler<Void>() {
+					@Override
+					public Void onCompleted(Response response) throws Exception {
+						RequestContext.set(context);
+						try {
+							if (!suscriber.isUnsubscribed()) {
+								suscriber.onNext(JsonUtil.getJsonMapper().readValue(response.getResponseBody(), clazz));
+								suscriber.onCompleted();
+							}
+						} catch (Exception e) {
+							errorHandler.accept(new JordanTechnicalException("Erreur lors de l'appel du service " + method + " " + host + path, e));
+							if (!suscriber.isUnsubscribed()) {
+								suscriber.onError(e);
+							}
+						}
+						return null;
+					}
+					
+					@Override
+					public void onThrowable(Throwable t) {
+						errorHandler.accept(new JordanTechnicalException("Erreur lors de l'appel du service " + method + " " + host + path, t));
+						if (!suscriber.isUnsubscribed()) {
+							suscriber.onError(t);
+						}
+					}
+				});
+			} catch (Exception e) {
+				throw new JordanTechnicalException("Erreur lors de l'appel du WS asynchrone " + method + " " + host + path, e);
+			}
+		})
+		.observeOn(Schedulers.io())
+		.subscribeOn(Schedulers.immediate());
+	}
+
+
+	public String getQueryString(Map<String, String> queryParams) {
+		StringBuilder b = new StringBuilder();
+		boolean first = true;
+		for (String key : queryParams.keySet()) {
+			String value = queryParams.get(key);
+			if (value != null) {
+				if (first) {
+					b.append("?");
+					first = false;
+				} else {
+					b.append("&");
+				}
+				b.append(escapeString(key)).append("=").append(escapeString(value));
+			}
+		}
+		return b.toString();
+	}
+
+}

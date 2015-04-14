@@ -57,6 +57,8 @@ public class CodegenMojo extends AbstractMojo {
             javaClientCodegenerator.setGroupId(groupId);
             javaClientCodegenerator.setArtifactId(artifactId);
             javaClientCodegenerator.setArtifactVersion(artifactVersion);
+            javaClientCodegenerator.initProperties();
+            javaClientCodegenerator.initSupportingFiles();
             config = javaClientCodegenerator;
         }
         config.setOutputDir(new File(output).getAbsolutePath());
