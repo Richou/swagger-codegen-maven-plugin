@@ -67,11 +67,11 @@ mvn install
 
 Configuration :
 
-`lang` language for generation
-`output` directory that will contains the generated class
-`groupId` for java2, the groupId for the generated pom.xml
-`artifactId` for java2, the artifact id of the jar built with the generated pom.xml
-`invokerPackage` for java2, package of generated classes
-`artifactVersion` for java2, version of the artifact built with the generated pom.xml
-`spec` input swagger file
-`templateDir` directory containing the mustache template
+`lang` language for generation  
+`output` directory that will contains the generated class  
+`groupId` for java2, the groupId for the generated pom.xml  
+`artifactId` for java2, the artifact id of the jar built with the generated pom.xml  
+`invokerPackage` for java2, package of generated classes  
+`artifactVersion` for java2, version of the artifact built with the generated pom.xml  
+`spec` input swagger file  
+`templateDir` directory containing the mustache template  
