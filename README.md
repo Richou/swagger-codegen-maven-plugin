@@ -3,7 +3,17 @@
 A plugin maven that helps to generate classes for a webservice that use swagger, the plugin uses swagger codegen.  
 I created this plugin, because in the swagger codegen, there is no way to change the package of generated classes.
 
-### Usage
+Install
+============================
+
+```
+git clone https://github.com/Richou/swagger-codegen-maven-plugin.git
+cd swagger-codegen-maven-plugin
+mvn install
+```
+
+Usage
+============================
 
 Basic usage :
 
