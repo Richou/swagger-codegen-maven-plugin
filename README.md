@@ -16,7 +16,7 @@ In your pom.xml
     <version>1.0.1</version>
     <executions>
         <execution>
-            <id>japi-generate</id>
+            <id>generate</id>
             <phase>compile</phase>
             <goals>
                 <goal>generate</goal>
@@ -49,10 +49,10 @@ Change generated package
     <configuration>
         <lang>java2</lang>
         <output>${project.build.directory}/gen/</output>
-        <groupId>fr.energieperspective</groupId>
-        <artifactId>${module-artifactid}</artifactId>
-        <invokerPackage>${invoker-package}</invokerPackage>
-        <artifactVersion>${module-artifact-version}</artifactVersion>
+        <groupId>net.heanoria.samples</groupId>
+        <artifactId>heanoria-api</artifactId>
+        <invokerPackage>net.heanoria.samples.client</invokerPackage>
+        <artifactVersion>1.0-SNAPSHOT</artifactVersion>
         <spec>${project.build.directory}/resources/swagger/swagger.json</spec>
         <templateDir>${project.basedir}/src/main/resources/templates/Java2</templateDir>
     </configuration>
