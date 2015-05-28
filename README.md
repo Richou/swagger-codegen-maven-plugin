@@ -1,6 +1,6 @@
 # swagger-codegen-maven-plugin
 
-A plugin maven that helps to generate classes for a webservice that use swagger, the plugin uses swagger codegen.
+A plugin maven that helps to generate classes for a webservice that use swagger, the plugin uses swagger codegen.  
 I created this plugin, because in the swagger codegen, there is no way change the package of generated classes.
 
 ### Usage
