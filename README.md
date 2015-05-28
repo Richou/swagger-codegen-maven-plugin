@@ -9,7 +9,7 @@ Basic usage :
 
 In your pom.xml
 
-```
+```xml
 <plugin>
     <groupId>net.heanoria.maven</groupId>
     <artifactId>swagger-codegen-maven-plugin</artifactId>
@@ -32,7 +32,7 @@ In your pom.xml
 
 Change generated package
 
-```
+```xml
 <plugin>
     <groupId>net.heanoria.maven</groupId>
     <artifactId>swagger-codegen-maven-plugin</artifactId>
