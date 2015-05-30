@@ -73,6 +73,7 @@ Change generated package
 This configuration will generate a complete maven project with a pom.xml, generate a jar with 
 
 ```
+cd ${project.build.directory}/gen
 mvn install
 ```
 
