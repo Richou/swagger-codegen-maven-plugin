@@ -8,8 +8,8 @@ Install
 
 ```
 git clone https://github.com/Richou/swagger-codegen-maven-plugin.git
-git checkout tags/1.0.1
 cd swagger-codegen-maven-plugin
+git checkout tags/1.0.1
 mvn install
 ```
 
