@@ -12,6 +12,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.eclipse.sisu.Parameters;
 
 import java.io.File;
 import java.util.ServiceLoader;
@@ -47,6 +48,9 @@ public class CodegenMojo extends AbstractMojo {
     @Parameter(property = "generate.artifactVersion", defaultValue = "1.0.0")
     private String artifactVersion = null;
 
+    @Parameter(property = "generate.excludePom", defaultValue = "false")
+    private boolean excludePom;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         ClientOptInput input = new ClientOptInput();
 
@@ -57,6 +61,7 @@ public class CodegenMojo extends AbstractMojo {
             javaClientCodegenerator.setGroupId(groupId);
             javaClientCodegenerator.setArtifactId(artifactId);
             javaClientCodegenerator.setArtifactVersion(artifactVersion);
+            javaClientCodegenerator.setExcludePom(excludePom);
             javaClientCodegenerator.initProperties();
             javaClientCodegenerator.initSupportingFiles();
             config = javaClientCodegenerator;

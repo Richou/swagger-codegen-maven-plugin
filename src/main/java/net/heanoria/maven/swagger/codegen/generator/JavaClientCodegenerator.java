@@ -8,6 +8,8 @@ import java.io.File;
 
 public class JavaClientCodegenerator extends JavaClientCodegen implements CodegenConfig {
 
+    public Boolean excludePom = false;
+
     public void initProperties() {
         templateDir = "Java2";
         apiPackage = invokerPackage + ".api";
@@ -21,7 +23,9 @@ public class JavaClientCodegenerator extends JavaClientCodegen implements Codege
 
     public void initSupportingFiles() {
         supportingFiles.clear();
-        supportingFiles.add(new SupportingFile("pom.mustache", "", "pom.xml"));
+        if(!excludePom)
+            supportingFiles.add(new SupportingFile("pom.mustache", "", "pom.xml"));
+
         supportingFiles.add(new SupportingFile("apiInvoker.mustache", (sourceFolder + File.separator + invokerPackage).replace(".", java.io.File.separator), "ApiInvoker.java"));
         supportingFiles.add(new SupportingFile("JsonUtil.mustache", (sourceFolder + File.separator + invokerPackage).replace(".", java.io.File.separator), "JsonUtil.java"));
         supportingFiles.add(new SupportingFile("apiException.mustache", (sourceFolder + File.separator + invokerPackage).replace(".", java.io.File.separator), "ApiException.java"));
@@ -48,4 +52,7 @@ public class JavaClientCodegenerator extends JavaClientCodegen implements Codege
         this.artifactVersion = artifactVersion;
     }
 
+    public void setExcludePom(Boolean excludePom) {
+        this.excludePom = excludePom;
+    }
 }
