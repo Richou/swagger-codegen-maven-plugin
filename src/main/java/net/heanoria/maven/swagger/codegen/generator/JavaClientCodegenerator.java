@@ -1,8 +1,8 @@
 package net.heanoria.maven.swagger.codegen.generator;
 
-import com.wordnik.swagger.codegen.CodegenConfig;
-import com.wordnik.swagger.codegen.SupportingFile;
-import com.wordnik.swagger.codegen.languages.JavaClientCodegen;
+import io.swagger.codegen.CodegenConfig;
+import io.swagger.codegen.SupportingFile;
+import io.swagger.codegen.languages.JavaClientCodegen;
 
 import java.io.File;
 
@@ -21,14 +21,25 @@ public class JavaClientCodegenerator extends JavaClientCodegen implements Codege
         additionalProperties.put("artifactVersion", artifactVersion);
     }
 
-    public void initSupportingFiles() {
+    @Override
+    public void processOpts() {
+        super.processOpts();
         supportingFiles.clear();
         if(!excludePom)
             supportingFiles.add(new SupportingFile("pom.mustache", "", "pom.xml"));
 
-        supportingFiles.add(new SupportingFile("apiInvoker.mustache", (sourceFolder + File.separator + invokerPackage).replace(".", java.io.File.separator), "ApiInvoker.java"));
-        supportingFiles.add(new SupportingFile("JsonUtil.mustache", (sourceFolder + File.separator + invokerPackage).replace(".", java.io.File.separator), "JsonUtil.java"));
-        supportingFiles.add(new SupportingFile("apiException.mustache", (sourceFolder + File.separator + invokerPackage).replace(".", java.io.File.separator), "ApiException.java"));
+        final String invokerFolder = (sourceFolder + File.separator + invokerPackage).replace(".", File.separator);
+        supportingFiles.add(new SupportingFile("ApiClient.mustache", invokerFolder, "ApiClient.java"));
+        supportingFiles.add(new SupportingFile("apiException.mustache", invokerFolder, "ApiException.java"));
+        supportingFiles.add(new SupportingFile("Configuration.mustache", invokerFolder, "Configuration.java"));
+        supportingFiles.add(new SupportingFile("JsonUtil.mustache", invokerFolder, "JsonUtil.java"));
+        supportingFiles.add(new SupportingFile("StringUtil.mustache", invokerFolder, "StringUtil.java"));
+
+        final String authFolder = (sourceFolder + File.separator + invokerPackage + ".auth").replace(".", File.separator);
+        supportingFiles.add(new SupportingFile("auth/Authentication.mustache", authFolder, "Authentication.java"));
+        supportingFiles.add(new SupportingFile("auth/HttpBasicAuth.mustache", authFolder, "HttpBasicAuth.java"));
+        supportingFiles.add(new SupportingFile("auth/ApiKeyAuth.mustache", authFolder, "ApiKeyAuth.java"));
+        supportingFiles.add(new SupportingFile("auth/OAuth.mustache", authFolder, "OAuth.java"));
     }
 
     @Override

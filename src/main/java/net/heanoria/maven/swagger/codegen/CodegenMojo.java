@@ -1,10 +1,10 @@
 package net.heanoria.maven.swagger.codegen;
 
-import com.wordnik.swagger.codegen.ClientOptInput;
-import com.wordnik.swagger.codegen.ClientOpts;
-import com.wordnik.swagger.codegen.CodegenConfig;
-import com.wordnik.swagger.codegen.DefaultGenerator;
-import com.wordnik.swagger.models.Swagger;
+import io.swagger.codegen.ClientOptInput;
+import io.swagger.codegen.ClientOpts;
+import io.swagger.codegen.CodegenConfig;
+import io.swagger.codegen.DefaultGenerator;
+import io.swagger.models.Swagger;
 import io.swagger.parser.SwaggerParser;
 import net.heanoria.maven.swagger.codegen.generator.JavaClientCodegenerator;
 import org.apache.maven.plugin.AbstractMojo;
@@ -12,7 +12,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.eclipse.sisu.Parameters;
 
 import java.io.File;
 import java.util.ServiceLoader;
@@ -49,7 +48,7 @@ public class CodegenMojo extends AbstractMojo {
     private String artifactVersion = null;
 
     @Parameter(property = "generate.excludePom", defaultValue = "false")
-    private boolean excludePom;
+    private boolean excludePom = false;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         ClientOptInput input = new ClientOptInput();
@@ -63,7 +62,6 @@ public class CodegenMojo extends AbstractMojo {
             javaClientCodegenerator.setArtifactVersion(artifactVersion);
             javaClientCodegenerator.setExcludePom(excludePom);
             javaClientCodegenerator.initProperties();
-            javaClientCodegenerator.initSupportingFiles();
             config = javaClientCodegenerator;
         }
         config.setOutputDir(new File(output).getAbsolutePath());
