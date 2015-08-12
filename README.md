@@ -9,7 +9,7 @@ Install
 ```
 git clone https://github.com/Richou/swagger-codegen-maven-plugin.git
 cd swagger-codegen-maven-plugin
-git checkout tags/1.0.1
+git checkout tags/1.1.0
 mvn install
 ```
 
@@ -24,7 +24,7 @@ In your pom.xml
 <plugin>
     <groupId>net.heanoria.maven</groupId>
     <artifactId>swagger-codegen-maven-plugin</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
     <executions>
         <execution>
             <id>generate</id>
@@ -47,7 +47,7 @@ Change generated package
 <plugin>
     <groupId>net.heanoria.maven</groupId>
     <artifactId>swagger-codegen-maven-plugin</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
     <executions>
         <execution>
             <id>japi-generate</id>
@@ -64,6 +64,7 @@ Change generated package
         <artifactId>heanoria-api</artifactId>
         <invokerPackage>net.heanoria.samples.client</invokerPackage>
         <artifactVersion>1.0-SNAPSHOT</artifactVersion>
+        <excludePom>true</excludePom>
         <spec>${project.build.directory}/resources/swagger/swagger.json</spec>
         <templateDir>${project.basedir}/src/main/resources/templates/Java2</templateDir>
     </configuration>
@@ -86,4 +87,6 @@ Configuration :
 `invokerPackage` for java2, package of generated classes  
 `artifactVersion` for java2, version of the artifact built with the generated pom.xml  
 `spec` input swagger file  
-`templateDir` directory containing the mustache template  
+`templateDir` directory containing the mustache template
+`excludePom` for java2, exclude the pom file from the generated files, false by default.
+
