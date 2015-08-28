@@ -89,6 +89,6 @@ Configuration :
 `invokerPackage` for java2, package of generated classes  
 `artifactVersion` for java2, version of the artifact built with the generated pom.xml  
 `spec` input swagger file  
-`templateDir` directory containing the mustache template
+`templateDir` directory containing the mustache template  
 `excludePom` for java2, exclude the pom file from the generated files, false by default.
 
